@@ -12,45 +12,34 @@ namespace ToDoList.Tests
       public void Dispose()
       {
         Task.DeleteAll();
+        Category.DeleteAll();
       }
       public TaskTests()
       {
-        DBConfiguration.ConnectionString = "server=localhost;user id=root;password=root;port=	8889;database=to_do_test;";
+        DBConfiguration.ConnectionString = "server=localhost;user id=root;password=root;port=	8889;database=todo_test;";
       }
 
       [TestMethod]
-      public void GetAll_DatabaseEmptyAtFirst_0()
+      public void Equals_OverrideTrueForSameDescription_Task()
       {
         //Arrange
-        int expected = 0;
+        DateTime due_date = DateTime.Parse("2017-10-15");
+        Task firstTask = new Task("Mow the lawn", due_date, 1);
+        Task secondTask = new Task("Mow the lawn", due_date, 1);
         //Act
-        int actual = Task.GetAll().Count;
-
         //Assert
-        Assert.AreEqual(expected, actual);
+        Assert.AreEqual(firstTask, secondTask);
       }
 
       [TestMethod]
-      public void Equals_ReturnsTrueIfDescriptionsAreTheSame_Task()
+      public void Save_SavesTaskToDatabase_TaskList()
       {
         //Arrange
-        Task expected = new Task("Mow the lawn");
-        //Act
-
-        Task actual = new Task("Mow the lawn");
-
-        //Assert
-        Assert.AreEqual(expected, actual);
-      }
-
-      [TestMethod]
-      public void Save_SavesToDatabase_TaskList()
-      {
-        //Arrange
-        Task testTask = new Task("Mow the lawn");
+        DateTime due_date = DateTime.Parse("2017-10-15");
+        Task testTask = new Task("Mow the lawn", due_date, 1);
+        testTask.Save();
         List<Task> expected = new List<Task>{testTask};
         //Act
-        testTask.Save();
         List<Task> actual = Task.GetAll();
 
         //Assert
@@ -58,13 +47,14 @@ namespace ToDoList.Tests
       }
 
       [TestMethod]
-      public void Save_AssignsIdToObject_Id()
+      public void Save_DatabaseAssignsIdToObject_Id()
       {
         //Arrange
-        Task testTask = new Task("Mow the lawn");
+        DateTime due_date = DateTime.Parse("2017-10-15");
+
+        Task testTask = new Task("Mow the lawn", due_date , 1);
         testTask.Save();
         int expected = testTask.GetId();
-
         //Act
         Task savedTask = Task.GetAll()[0];
         int actual = savedTask.GetId();
@@ -73,19 +63,21 @@ namespace ToDoList.Tests
         Assert.AreEqual(expected, actual);
       }
 
+
       [TestMethod]
       public void Find_FindsTaskInDatabase_Task()
       {
         //Arrange
-        Task testTask = new Task("Mow the lawn");
-        testTask.Save();
+        DateTime due_date = DateTime.Parse("2017-10-15");
+
+        Task expected = new Task("Mow the lawn", due_date, 1);
+        expected.Save();
 
         //Act
-        Task foundTask = Task.Find(testTask.GetId());
+        Task actual = Task.Find(expected.GetId());
 
         //Assert
-        Assert.AreEqual(testTask, foundTask);
+        Assert.AreEqual(expected, actual);
       }
-
     }
 }
