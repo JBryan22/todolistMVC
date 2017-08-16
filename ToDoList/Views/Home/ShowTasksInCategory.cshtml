@@ -1,0 +1,10 @@
+@{
+  Layout = "_Layout";
+}
+
+<div class="jumbotron">
+  @foreach(var task in Model)
+  {
+    <p>@task.GetName()</p>
+  }
+</div>
