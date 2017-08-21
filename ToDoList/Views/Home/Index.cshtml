@@ -1,38 +1,4 @@
-
-@{
-  Layout = "_Layout";
-}
-<div class="jumbotron">
-  <h1>Welcome to Your ToDoList!</h1>
-  <h3><em>Please enter the name of your task to add to the ToDoList.</em></h3>
-  <form action="/addMyTask" method="post">
-    <div class="form-group">
-      <label for="taskName">Task Name</label>
-      <input type="text" name="taskName" placeholder="your task name goes here" class="form-control" required>
-    </div>
-    <div class="form-group">
-      <label for="taskDate">Task Date</label>
-      <input type="date" name="taskDate" placeholder="your task name goes here" class="form-control" required>
-    </div>
-    <div class="form-group">
-      <label for="category">Category</label>
-      <input type="text" name="category" placeholder="category goes here" class="form-control" required>
-    </div>
-    <button class="btn btn-lg btn-info">Add</button>
-  </form>
-</div>
-
-
-
-<div class="row">
-  <div class="col-md-2">
-    <form action="/showAll" method="post">
-      <button class="btn btn-lg btn-success">Show All Collections</button>
-    </form>
-  </div>
-  <div class="col-md-2">
-    <form action="/showCategory" method="get">
-      <button class="btn btn-lg btn-primary">Show By Category</button>
-    </form>
-  </div>
-</div>
+<h1>To Do List</h1>
+<hr />
+<h4><a href="/categories">View Categories</a></h4>
+<h4><a href="/tasks">View Tasks</a></h4>

@@ -9,62 +9,96 @@ namespace ToDoList.Controllers
   public class HomeController : Controller
   {
     [HttpGet("/")]
-    public ActionResult Index ()
-    {
+  public ActionResult Index()
+  {
       return View();
+  }
+  [HttpGet("/tasks")]
+  public ActionResult Tasks()
+  {
+      List<Task> allTasks = Task.GetAll();
+      return View(allTasks);
+  }
+  [HttpGet("/categories")]
+  public ActionResult Categories()
+  {
+      List<Category> allCategories = Category.GetAll();
+      return View(allCategories);
+  }
+//NEW TASK
+    [HttpGet("/tasks/new")]
+    public ActionResult TaskForm()
+    {
+        return View();
+    }
+    [HttpPost("/tasks/new")]
+    public ActionResult TaskCreate()
+    {
+        Task newTask = new Task(Request.Form["task-description"]);
+        newTask.Save();
+        return View("Success");
     }
 
-    [HttpPost("/addMyTask")]
-    public ActionResult AddMyTask()
+//NEW CATEGORY
+    [HttpGet("/categories/new")]
+    public ActionResult CategoryForm()
     {
-      string taskName = Request.Form["taskName"];
-      DateTime taskDueDate = DateTime.Parse( Request.Form["taskDate"]);
-      string categoryName = Request.Form["category"];
+        return View();
+    }
+    [HttpPost("/categories/new")]
+    public ActionResult CategoryCreate()
+    {
+        Category newCategory = new Category(Request.Form["category-name"]);
+        newCategory.Save();
+        return View("Success");
+    }    // [HttpGet("/showCategory")]
+//ONE TASK
+    [HttpGet("/tasks/{id}")]
+    public ActionResult TaskDetail(int id)
+    {
+        Dictionary<string, object> model = new Dictionary<string, object>();
+        Task selectedTask = Task.Find(id);
+        List<Category> TaskCategories = selectedTask.GetCategories();
+        List<Category> AllCategories = Category.GetAll();
+        model.Add("task", selectedTask);
+        model.Add("taskCategories", TaskCategories);
+        model.Add("allCategories", AllCategories);
+        return View( model);
 
-      Category newCategory = new Category(categoryName);
-      newCategory.Save();
-
-      int categoryId = newCategory.GetId();
-      MyTask newMyTask = new MyTask(taskName, taskDueDate,categoryId);
-      newMyTask.Save();
-
-      // List<MyTask> allMyTasks = MyTask.GetAll();
-      // return View(allMyTasks);
-      return RedirectToAction("GetAll", "Home");
     }
 
-    [HttpGet("/getAllMyTask")]
-    public ActionResult GetAll()
+
+
+//ONE CATEGORY
+    [HttpGet("/categories/{id}")]
+    public ActionResult CategoryDetail(int id)
     {
-      List<MyTask> allMyTasks = MyTask.GetAll();
-      return View(allMyTasks);
+        Dictionary<string, object> model = new Dictionary<string, object>();
+        Category SelectedCategory = Category.Find(id);
+        List<Task> CategoryTasks = SelectedCategory.GetTasks();
+        List<Task> AllTasks = Task.GetAll();
+        model.Add("category", SelectedCategory);
+        model.Add("categoryTasks", CategoryTasks);
+        model.Add("allTasks", AllTasks);
+        return View(model);
     }
-    [HttpPost("/showAll")]
-    public ActionResult ShowAll()
+    [HttpPost("task/add_category")]
+    public ActionResult TaskAddCategory()
     {
-      return RedirectToAction("GetAll", "Home");
+        Category category = Category.Find(Int32.Parse(Request.Form["category-id"]));
+        Task task = Task.Find(Int32.Parse(Request.Form["task-id"]));
+        task.AddCategory(category);
+        return View("Success");
     }
 
-    [HttpPost("/clearAll")]
-    public ActionResult ClearAll()
+    //ADD TASK TO CATEGORY
+    [HttpPost("category/add_task")]
+    public ActionResult CategoryAddTask()
     {
-      MyTask.DeleteAll();
-      return View();
-    }
-
-    [HttpGet("/showCategory")]
-    public ActionResult ShowCategoryList()
-    {
-      List<Category> categoryList = Category.GetAll();
-      return View(categoryList);
-    }
-
-    [HttpPost("/showTasksInCategory")]
-    public ActionResult ShowTasksInCategory(int categoryId)
-    {
-      Console.WriteLine("CATEGORY ID" + categoryId);
-      List<MyTask> taskList = MyTask.FindTasksByCategory(categoryId);
-      return View(taskList);
+        Category category = Category.Find(Int32.Parse(Request.Form["category-id"]));
+        Task task = Task.Find(Int32.Parse(Request.Form["task-id"]));
+        category.AddTask(task);
+        return View("Success");
     }
   }
 }
